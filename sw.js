@@ -1,24 +1,44 @@
-const CACHE_NAME = 'piramide-app-v1';
-const ASSETS = [
+const CACHE_NAME = 'piramide-desencadenado-v5';
+const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json'
 ];
 
-// Instalación del Service Worker y almacenamiento en caché
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
+      return cache.addAll(STATIC_ASSETS);
     })
   );
+  self.skipWaiting();
 });
 
-// Intercepción de peticiones para funcionar offline
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+      );
+    })
+  );
+  self.clients.claim();
+});
+
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
+    caches.match(event.request).then((cachedResponse) => {
+      return cachedResponse || fetch(event.request).then((response) => {
+        if (response && response.status === 200 && response.type === 'basic') {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+        }
+        return response;
+      }).catch(() => {
+        return caches.match('./index.html');
+      });
     })
   );
 });

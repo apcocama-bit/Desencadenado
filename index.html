@@ -48,7 +48,7 @@
       display: flex;
     }
 
-    /* VISTA 1: CONFIGURACIÓN Y SELECCIÓN DE RUTINAS */
+    /* VISTA 1: CONFIGURACIÓN Y SELECCIÓN (PÁGINA PRINCIPAL) */
     .setup-container {
       flex: 1;
       padding: 20px;
@@ -409,7 +409,7 @@
 
 <div class="app-container">
 
-  <!-- VISTA 1: CONFIGURACIÓN Y SELECCIÓN (Tab Izquierda) -->
+  <!-- VISTA 1: CONFIGURACIÓN Y SELECCIÓN (Página Principal - Activa por defecto) -->
   <div id="setupView" class="view active">
     <div class="setup-container">
       <div class="setup-title">Desencadenado</div>
@@ -436,7 +436,7 @@
     </div>
   </div>
 
-  <!-- VISTA 2: WORKOUT ACTIVO (Pantalla Pirámide) -->
+  <!-- VISTA 2: WORKOUT ACTIVO -->
   <div id="workoutView" class="view">
     <div class="workout-view">
       <!-- 25% SUPERIOR -->
@@ -464,7 +464,7 @@
     </div>
   </div>
 
-  <!-- VISTA 3: HISTÓRICO (Tab Derecha) -->
+  <!-- VISTA 3: HISTÓRICO -->
   <div id="historyView" class="view">
     <div class="history-container">
       <div class="history-title">Histórico de Entrenamientos</div>
@@ -578,12 +578,11 @@
     ]
   };
 
-  // Variables de Estado del Workout
   let selectedExercises = [];
   let currentExerciseIndex = 0;
   
-  const BLOCK_TIME = 7 * 60; // 7 minutos por ejercicio
-  const REST_TIME = 60;      // 1 minuto de descanso entre ejercicios
+  const BLOCK_TIME = 7 * 60;
+  const REST_TIME = 60;
   
   let timeLeft = BLOCK_TIME;
   let mainTimerInterval = null;
@@ -594,15 +593,14 @@
   let exerciseMaxRecords = [];
   
   let isClimbing = true;
-  let isRestingSet = false; // Descanso de repeticiones (azul corto)
-  let isRestingBetweenExercises = false; // Descanso de 1 min entre bloques (azul largo)
+  let isRestingSet = false;
+  let isRestingBetweenExercises = false;
   let isRunning = false;
   let isPaused = false;
-  let isStartedWaiting = true; // Esperando primera pulsación en "Toca para empezar"
+  let isStartedWaiting = true;
 
   let activeWorkoutTitle = '';
 
-  // Inicializar Selectores al Cargar
   window.addEventListener('DOMContentLoaded', () => {
     initDropdowns();
   });
@@ -658,7 +656,6 @@
     container.innerHTML = html;
   }
 
-  // Gestión de Pestañas
   function switchTab(tab) {
     if (isRunning && tab === 'historico') {
       if (!confirm('Tienes un entrenamiento en curso. ¿Deseas salir?')) return;
@@ -703,7 +700,6 @@
     } catch(e) {}
   }
 
-  // Preparar e iniciar sesión
   function prepareWorkoutSession() {
     currentExerciseIndex = 0;
     exerciseMaxRecords = [];
@@ -807,7 +803,6 @@
     clearInterval(mainTimerInterval);
     clearInterval(restTimerInterval);
     
-    // Guardar récord del ejercicio actual
     exerciseMaxRecords.push({
       name: selectedExercises[currentExerciseIndex].name,
       maxReps: maxReachedReps
@@ -816,7 +811,6 @@
     currentExerciseIndex++;
 
     if (currentExerciseIndex < selectedExercises.length) {
-      // Iniciar 1 minuto de descanso entre ejercicios
       startTransitionRest();
     } else {
       finishWorkout();
@@ -841,7 +835,6 @@
           clearInterval(restTimerInterval);
           playBeep();
           
-          // Preparar siguiente ejercicio
           isRestingBetweenExercises = false;
           timeLeft = BLOCK_TIME;
           currentReps = 1;
@@ -884,7 +877,6 @@
     isRunning = false;
     document.querySelector('.tab-bar').style.display = 'flex';
 
-    // Guardar en histórico
     saveToHistory({
       name: activeWorkoutTitle,
       date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
@@ -896,7 +888,6 @@
     document.getElementById('setupView').classList.add('active');
   }
 
-  // Descanso de repeticiones individual
   function startRestSet(seconds) {
     isRestingSet = true;
     let restRemaining = seconds;
@@ -932,7 +923,6 @@
     }, 1000);
   }
 
-  // Acciones en la pantalla de pirámide
   function handleMiddleClick() {
     if (isRestingBetweenExercises || isPaused) return;
 
@@ -956,7 +946,6 @@
     startRestSet(currentReps);
   }
 
-  // Histórico LocalStorage
   function saveToHistory(record) {
     let history = JSON.parse(localStorage.getItem('piramide_history_v2') || '[]');
     history.unshift(record);

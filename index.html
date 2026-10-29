@@ -5,11 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Pirámide Desencadenado</title>
   
-  <!-- Enlace al Manifest para PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1e1e24">
-
-  <!-- Configuración para iOS / Safari -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Pirámide">
@@ -37,9 +34,140 @@
       flex-direction: column;
       height: 100vh;
       width: 100vw;
+      position: relative;
     }
 
-    /* 25% SUPERIOR: TEMPORIZADOR Y CONTROL */
+    .view {
+      display: none;
+      flex-direction: column;
+      height: calc(100vh - 60px);
+      width: 100%;
+    }
+
+    .view.active {
+      display: flex;
+    }
+
+    /* VISTA 1: CONFIGURACIÓN Y SELECCIÓN DE RUTINAS */
+    .setup-container {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: #18181b;
+      display: flex;
+      flex-direction: column;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+      padding-bottom: 80px;
+    }
+
+    .setup-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+      color: #4ade80;
+    }
+
+    .setup-subtitle {
+      font-size: 0.85rem;
+      color: #a1a1aa;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #d4d4d8;
+      margin-bottom: 4px;
+    }
+
+    .form-select {
+      width: 100%;
+      padding: 10px;
+      background: #27272a;
+      border: 1px solid #3f3f46;
+      color: white;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    .exercises-preview-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      color: #a1a1aa;
+      margin: 10px 0 6px 0;
+      font-weight: bold;
+    }
+
+    .exercise-card {
+      background: #27272a;
+      border: 1px solid #3f3f46;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .exercise-card:active {
+      background: #3f3f46;
+    }
+
+    .exercise-card-name {
+      font-weight: bold;
+      font-size: 0.95rem;
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .exercise-card-desc {
+      font-size: 0.82rem;
+      color: #d4d4d8;
+      margin-top: 6px;
+      display: none;
+      line-height: 1.3;
+      border-top: 1px solid #3f3f46;
+      padding-top: 6px;
+    }
+
+    .exercise-card.expanded .exercise-card-desc {
+      display: block;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: #22c55e;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 15px;
+      text-transform: uppercase;
+    }
+
+    .btn-primary:active {
+      background: #16a34a;
+    }
+
+    /* VISTA 2: WORKOUT ACTIVO */
+    .workout-view {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
     .top-section {
       height: 25%;
       background-color: #1e1e24;
@@ -52,30 +180,69 @@
       position: relative;
     }
 
+    .top-left-btn {
+      position: absolute;
+      left: 15px;
+      top: 15px;
+      background: #333;
+      color: white;
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .top-right-btn {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      background: #ef4444;
+      color: white;
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .timer-label {
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 1px;
       color: #aaa;
+      text-align: center;
+      max-width: 60%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .main-timer {
-      font-size: 2.8rem;
+      font-size: 2.3rem;
       font-weight: 800;
       font-variant-numeric: tabular-nums;
       color: #ffffff;
     }
 
     .status-badge {
-      margin-top: 4px;
-      font-size: 0.8rem;
-      padding: 3px 10px;
-      border-radius: 12px;
+      margin-top: 2px;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 10px;
       background: #333;
       color: #ddd;
     }
 
-    /* 50% CENTRAL: BOTÓN PRINCIPAL / ESTADO (VERDE O AZUL) */
     .middle-section {
       height: 50%;
       display: flex;
@@ -86,10 +253,8 @@
       transition: background-color 0.25s ease;
       text-align: center;
       padding: 20px;
-      position: relative;
     }
 
-    /* Estado Trabajo: Verde */
     .middle-section.work {
       background-color: #2e7d32;
       color: #ffffff;
@@ -98,33 +263,31 @@
       background-color: #1b5e20;
     }
 
-    /* Estado Descanso: Azul */
     .middle-section.rest {
       background-color: #1565c0;
       color: #ffffff;
     }
 
     .reps-title {
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       text-transform: uppercase;
       font-weight: 600;
       opacity: 0.9;
     }
 
     .reps-count {
-      font-size: 5rem;
+      font-size: 4rem;
       font-weight: 900;
       line-height: 1;
-      margin: 10px 0;
+      margin: 8px 0;
     }
 
     .action-subtext {
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       opacity: 0.85;
-      max-width: 80%;
+      max-width: 85%;
     }
 
-    /* 25% INFERIOR: BOTÓN ROJO DE REVERSIÓN */
     .bottom-section {
       height: 25%;
       background-color: #c62828;
@@ -145,87 +308,386 @@
     }
 
     .bottom-title {
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       font-weight: bold;
       text-transform: uppercase;
     }
 
     .bottom-subtitle {
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       margin-top: 4px;
       opacity: 0.9;
     }
 
-    /* Botón flotante para iniciar/resetear */
-    .control-btn {
-      position: absolute;
-      right: 15px;
-      top: 15px;
-      background: #444;
-      color: white;
+    /* VISTA 3: HISTÓRICO */
+    .history-container {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: #121212;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .history-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      color: #ffffff;
+    }
+
+    .history-card {
+      background: #1e1e24;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .history-card-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      color: #4ade80;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .history-card-details {
+      font-size: 0.82rem;
+      color: #a1a1aa;
+    }
+
+    .empty-history {
+      text-align: center;
+      color: #71717a;
+      margin-top: 40px;
+    }
+
+    /* NAVEGACIÓN INFERIOR (TABS) */
+    .tab-bar {
+      height: 60px;
+      background: #18181b;
+      border-top: 1px solid #27272a;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+    }
+
+    .tab-item {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: none;
       border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      color: #71717a;
+      font-size: 0.75rem;
       cursor: pointer;
+    }
+
+    .tab-item.active {
+      color: #22c55e;
+      font-weight: bold;
+    }
+
+    .tab-icon {
+      font-size: 1.2rem;
+      margin-bottom: 2px;
     }
   </style>
 </head>
 <body>
 
 <div class="app-container">
-  <!-- 25% SUPERIOR -->
-  <div class="top-section">
-    <button id="startResetBtn" class="control-btn">Iniciar</button>
-    <div class="timer-label">Tiempo Restante (7 Min)</div>
-    <div id="mainTimer" class="main-timer">07:00</div>
-    <div id="statusBadge" class="status-badge">Listo para empezar</div>
+
+  <!-- VISTA 1: CONFIGURACIÓN Y SELECCIÓN (Tab Izquierda) -->
+  <div id="setupView" class="view active">
+    <div class="setup-container">
+      <div class="setup-title">Desencadenado</div>
+      <div class="setup-subtitle">Selecciona semana, día y revisa tus ejercicios.</div>
+      
+      <div class="form-group">
+        <label class="form-label">Semana del Programa</label>
+        <select id="weekSelect" class="form-select" onchange="updateDaysDropdown()">
+          <!-- Rellenado por JS -->
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Día de la Semana y Foco</label>
+        <select id="daySelect" class="form-select" onchange="renderExercisesPreview()">
+          <!-- Rellenado por JS -->
+        </select>
+      </div>
+
+      <div class="exercises-preview-title">Ejercicios del día (4 Bloques x 7 min)</div>
+      <div id="exercisesPreviewList"></div>
+
+      <button class="btn-primary" onclick="prepareWorkoutSession()">Empezar</button>
+    </div>
   </div>
 
-  <!-- 50% CENTRAL -->
-  <div id="middleBtn" class="middle-section work">
-    <div id="repsLabel" class="reps-title">Haz este nº de repeticiones</div>
-    <div id="repsDisplay" class="reps-count">1</div>
-    <div id="subtextDisplay" class="action-subtext">Toca aquí cuando completes la serie</div>
+  <!-- VISTA 2: WORKOUT ACTIVO (Pantalla Pirámide) -->
+  <div id="workoutView" class="view">
+    <div class="workout-view">
+      <!-- 25% SUPERIOR -->
+      <div class="top-section">
+        <button id="pauseBtn" class="top-left-btn" onclick="togglePause()" title="Pausar">⏸️</button>
+        <button class="top-right-btn" onclick="confirmExitWorkout()" title="Salir">✕</button>
+        
+        <div class="timer-label" id="workoutTitleLabel">Cargando...</div>
+        <div id="mainTimer" class="main-timer">07:00</div>
+        <div id="statusBadge" class="status-badge">Toca para empezar</div>
+      </div>
+
+      <!-- 50% CENTRAL -->
+      <div id="middleBtn" class="middle-section work" onclick="handleMiddleClick()">
+        <div id="repsLabel" class="reps-title">Estado</div>
+        <div id="repsDisplay" class="reps-count">▶</div>
+        <div id="subtextDisplay" class="action-subtext">Toca para empezar</div>
+      </div>
+
+      <!-- 25% INFERIOR -->
+      <div id="reverseBtn" class="bottom-section" onclick="handleReverseClick()">
+        <div class="bottom-title">▲ LLEGUE A LA CIMA ▼</div>
+        <div class="bottom-subtitle">Toca aquí si no completaste la serie y quieres bajar</div>
+      </div>
+    </div>
   </div>
 
-  <!-- 25% INFERIOR -->
-  <div id="reverseBtn" class="bottom-section">
-    <div class="bottom-title">▲ LLEGUE A LA CIMA ▼</div>
-    <div class="bottom-subtitle">Toca aquí si no completaste la serie y quieres bajar</div>
+  <!-- VISTA 3: HISTÓRICO (Tab Derecha) -->
+  <div id="historyView" class="view">
+    <div class="history-container">
+      <div class="history-title">Histórico de Entrenamientos</div>
+      <div id="historyList"></div>
+    </div>
   </div>
+
+  <!-- BARRA DE NAVEGACIÓN INFERIOR -->
+  <nav class="tab-bar">
+    <button id="tabEntrenar" class="tab-item active" onclick="switchTab('entrenar')">
+      <span class="tab-icon">🏋️‍♂️</span>
+      <span>Entrenar</span>
+    </button>
+    <button id="tabHistorico" class="tab-item" onclick="switchTab('historico')">
+      <span class="tab-icon">📊</span>
+      <span>Histórico</span>
+    </button>
+  </nav>
+
 </div>
 
 <script>
-  // Variables del Estado
-  const TOTAL_TIME = 7 * 60; // 7 minutos en segundos
-  let timeLeft = TOTAL_TIME;
+  // Estructura de datos del programa Desencadenado
+  const desencadenadoData = {
+    "Semana 1": [
+      {
+        focus: "Día 1: Tirar / Empujar Base",
+        exercises: [
+          { name: "Flexiones de pecho", desc: "Manos un poco más abiertas que los hombros. Baja el pecho de forma controlada hasta casi tocar el suelo y empuja con fuerza." },
+          { name: "Remo invertido en barra", desc: "Sujétate a una barra baja o anillas, mantén el cuerpo recto y lleva el pecho hacia la barra contrayendo la espalda." },
+          { name: "Fondos en paralelas", desc: "Flexiona los brazos bajando el cuerpo verticalmente, manteniendo el torso ligeramente inclinado hacia adelante." },
+          { name: "Dominadas supinas", desc: "Agarre con palmas hacia ti. Eleva la barbilla por encima de la barra manteniendo el abdomen firme." }
+        ]
+      },
+      {
+        focus: "Día 2: Piernas & Core",
+        exercises: [
+          { name: "Sentadillas libres", desc: "Pies a la anchura de los hombros, baja la cadera hacia atrás y hacia abajo manteniendo la espalda recta." },
+          { name: "Zancadas alternas", desc: "Da un paso al frente y flexiona ambas rodillas formando ángulos de 90 grados sin golpear la rodilla trasera." },
+          { name: "Elevación de talones", desc: "Apoya la parte delantera de los pies en un escalón y eleva los talones al máximo." },
+          { name: "Plancha abdominal", desc: "Apoya antebrazos y puntas de los pies, contrayendo glúteos y abdomen en línea recta." }
+        ]
+      },
+      {
+        focus: "Día 3: Cuerpo Completo (Full Body)",
+        exercises: [
+          { name: "Flexiones declinadas", desc: "Pies elevados sobre superficie y manos en el suelo para enfatizar el pectoral superior." },
+          { name: "Dominadas pronas", desc: "Agarre con palmas hacia afuera. Eleva el cuerpo hasta superar la barra." },
+          { name: "Sentadillas búlgaras", desc: "Un pie apoyado en un banco detrás y realiza sentadilla profunda con la pierna delantera." },
+          { name: "Puente de glúteos", desc: "Tumbado boca arriba con rodillas flexionadas, eleva la cadera contrayendo los glúteos." }
+        ]
+      }
+    ],
+    "Semana 2": [
+      {
+        focus: "Día 1: Fuerza Tren Superior",
+        exercises: [
+          { name: "Flexiones diamante", desc: "Manos juntas formando un triángulo para enfocar el esfuerzo en los tríceps." },
+          { name: "Dominadas excéntricas", desc: "Sube con salto y baja lentamente durante 4-5 segundos." },
+          { name: "Fondos estrictos", desc: "Fondos en paralelas completos controlando cada segundo." },
+          { name: "Remo invertido abierto", desc: "Remo con agarre prono abierto para hombro posterior y espalda alta." }
+        ]
+      },
+      {
+        focus: "Día 2: Piernas & Explosividad",
+        exercises: [
+          { name: "Sentadillas con salto", desc: "Sentadilla profunda y salto explosivo vertical." },
+          { name: "Zancadas saltando", desc: "Alterna las zancadas en el aire de forma dinámica." },
+          { name: "Sentadilla pistol asistida", desc: "Sentadilla a una pierna utilizando soporte para equilibrio." },
+          { name: "Crunch abdominal clásico", desc: "Elevación de escápulas despegando la espalda alta del suelo." }
+        ]
+      },
+      {
+        focus: "Día 3: Resistencia Global",
+        exercises: [
+          { name: "Flexiones con palmada", desc: "Flexión explosiva separando las manos del suelo." },
+          { name: "Dominadas australianas", desc: "Remo con barra baja enfocado en alta repetición." },
+          { name: "Sentadillas lentas", desc: "Ejecutadas en 4 segundos de bajada y 2 de subida." },
+          { name: "Plancha lateral", desc: "Apoyo lateral sobre antebrazo para oblicuos y estabilidad." }
+        ]
+      }
+    ],
+    "Semana 3": [
+      {
+        focus: "Día 1: Hipertrofia Calistenia",
+        exercises: [
+          { name: "Flexiones en pica", desc: "Cadera elevada en V invertida para trabajar hombros." },
+          { name: "Dominadas neutras", desc: "Palmas enfrentadas para proteger codos y trabajar dorsal." },
+          { name: "Fondos en barra alta", desc: "Elevación del torso sobre barra fija." },
+          { name: "Flexiones arquero", desc: "Flexión desplazando el peso hacia un brazo alternativamente." }
+        ]
+      },
+      {
+        focus: "Día 2: Tren Inferior Intenso",
+        exercises: [
+          { name: "Sentadillas sumo", desc: "Pies muy separados y puntas hacia afuera." },
+          { name: "Zancadas búlgaras pliométricas", desc: "Zancada búlgara con salto al extender." },
+          { name: "Gemelos a una pierna", desc: "Rango completo unilateral en escalón." },
+          { name: "Elevación de piernas colgado", desc: "Eleva las piernas estiradas a 90 grados." }
+        ]
+      },
+      {
+        focus: "Día 3: Bloque de Cimas Altas",
+        exercises: [
+          { name: "Flexiones declinadas cerradas", desc: "Pies elevados y manos juntas para tríceps." },
+          { name: "Dominadas estrictas lentas", desc: "Dominadas con pausa arriba." },
+          { name: "Sentadillas profundas continuas", desc: "Ritmo constante sin descanso arriba." },
+          { name: "Mountain Climbers", desc: "Carrera estática en plancha manteniendo velocidad." }
+        ]
+      }
+    ]
+  };
+
+  // Variables de Estado del Workout
+  let selectedExercises = [];
+  let currentExerciseIndex = 0;
+  
+  const BLOCK_TIME = 7 * 60; // 7 minutos por ejercicio
+  const REST_TIME = 60;      // 1 minuto de descanso entre ejercicios
+  
+  let timeLeft = BLOCK_TIME;
   let mainTimerInterval = null;
   let restTimerInterval = null;
   
   let currentReps = 1;
-  let isClimbing = true; // true = subiendo, false = bajando
-  let isResting = false;
+  let maxReachedReps = 1;
+  let exerciseMaxRecords = [];
+  
+  let isClimbing = true;
+  let isRestingSet = false; // Descanso de repeticiones (azul corto)
+  let isRestingBetweenExercises = false; // Descanso de 1 min entre bloques (azul largo)
   let isRunning = false;
+  let isPaused = false;
+  let isStartedWaiting = true; // Esperando primera pulsación en "Toca para empezar"
 
-  // Elementos del DOM
-  const mainTimerEl = document.getElementById('mainTimer');
-  const statusBadgeEl = document.getElementById('statusBadge');
-  const middleBtn = document.getElementById('middleBtn');
-  const repsLabel = document.getElementById('repsLabel');
-  const repsDisplay = document.getElementById('repsDisplay');
-  const subtextDisplay = document.getElementById('subtextDisplay');
-  const reverseBtn = document.getElementById('reverseBtn');
-  const startResetBtn = document.getElementById('startResetBtn');
+  let activeWorkoutTitle = '';
 
-  // Formatear Segundos a MM:SS
+  // Inicializar Selectores al Cargar
+  window.addEventListener('DOMContentLoaded', () => {
+    initDropdowns();
+  });
+
+  function initDropdowns() {
+    const weekSelect = document.getElementById('weekSelect');
+    weekSelect.innerHTML = '';
+    Object.keys(desencadenadoData).forEach(week => {
+      const opt = document.createElement('option');
+      opt.value = week;
+      opt.textContent = week;
+      weekSelect.appendChild(opt);
+    });
+    updateDaysDropdown();
+  }
+
+  function updateDaysDropdown() {
+    const weekSelect = document.getElementById('weekSelect');
+    const daySelect = document.getElementById('daySelect');
+    const days = desencadenadoData[weekSelect.value];
+    
+    daySelect.innerHTML = '';
+    days.forEach((dayObj, index) => {
+      const opt = document.createElement('option');
+      opt.value = index;
+      opt.textContent = dayObj.focus;
+      daySelect.appendChild(opt);
+    });
+    renderExercisesPreview();
+  }
+
+  function renderExercisesPreview() {
+    const weekSelect = document.getElementById('weekSelect').value;
+    const dayIndex = document.getElementById('daySelect').value;
+    const dayObj = desencadenadoData[weekSelect][dayIndex];
+    
+    selectedExercises = dayObj.exercises;
+    activeWorkoutTitle = `${weekSelect} - ${dayObj.focus}`;
+
+    const container = document.getElementById('exercisesPreviewList');
+    let html = '';
+    selectedExercises.forEach((ex, idx) => {
+      html += `
+        <div class="exercise-card" onclick="this.classList.toggle('expanded')">
+          <div class="exercise-card-name">
+            <span>${idx + 1}. ${ex.name}</span>
+            <span style="font-size:0.8rem; color:#a1a1aa;">▼ info</span>
+          </div>
+          <div class="exercise-card-desc">${ex.desc}</div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  // Gestión de Pestañas
+  function switchTab(tab) {
+    if (isRunning && tab === 'historico') {
+      if (!confirm('Tienes un entrenamiento en curso. ¿Deseas salir?')) return;
+      exitWorkoutToMenu();
+    }
+
+    document.getElementById('setupView').classList.remove('active');
+    document.getElementById('workoutView').classList.remove('active');
+    document.getElementById('historyView').classList.remove('active');
+    
+    document.getElementById('tabEntrenar').classList.remove('active');
+    document.getElementById('tabHistorico').classList.remove('active');
+
+    if (tab === 'entrenar') {
+      document.getElementById('setupView').classList.add('active');
+      document.getElementById('tabEntrenar').classList.add('active');
+    } else if (tab === 'historico') {
+      document.getElementById('historyView').classList.add('active');
+      document.getElementById('tabHistorico').classList.add('active');
+      loadHistory();
+    }
+  }
+
   function formatTime(sec) {
     const m = Math.floor(sec / 60).toString().padStart(2, '0');
     const s = (sec % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
   }
 
-  // Reproducir pitido simple al acabar descanso
   function playBeep() {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -234,22 +696,78 @@
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.type = 'sine';
-      osc.frequency.value = 880; // Nota A5
+      osc.frequency.value = 880;
       gain.gain.setValueAtTime(0.1, ctx.currentTime);
       osc.start();
       osc.stop(ctx.currentTime + 0.3);
-    } catch(e) {
-      console.log('AudioContext no soportado/bloqueado');
-    }
+    } catch(e) {}
   }
 
-  // Actualizar la interfaz central
-  function updateUI() {
-    mainTimerEl.textContent = formatTime(timeLeft);
+  // Preparar e iniciar sesión
+  function prepareWorkoutSession() {
+    currentExerciseIndex = 0;
+    exerciseMaxRecords = [];
+    timeLeft = BLOCK_TIME;
     
-    if (isResting) {
+    currentReps = 1;
+    maxReachedReps = 1;
+    isClimbing = true;
+    isRestingSet = false;
+    isRestingBetweenExercises = false;
+    isRunning = false;
+    isPaused = false;
+    isStartedWaiting = true;
+
+    document.getElementById('setupView').classList.remove('active');
+    document.getElementById('workoutView').classList.add('active');
+    document.querySelector('.tab-bar').style.display = 'none';
+
+    updateWaitingStateUI();
+  }
+
+  function updateWaitingStateUI() {
+    const ex = selectedExercises[currentExerciseIndex];
+    document.getElementById('workoutTitleLabel').textContent = `Ej. ${currentExerciseIndex + 1}/4: ${ex.name}`;
+    mainTimerEl.textContent = formatTime(timeLeft);
+    statusBadgeEl.textContent = 'Parado';
+    
+    middleBtn.className = 'middle-section work';
+    repsLabel.textContent = activeWorkoutTitle;
+    repsDisplay.textContent = '▶';
+    subtextDisplay.textContent = 'Toca para empezar';
+    document.getElementById('reverseBtn').style.opacity = '0.5';
+  }
+
+  function startWorkoutBlock() {
+    isStartedWaiting = false;
+    isRunning = true;
+    document.getElementById('reverseBtn').style.opacity = '1';
+    updateUI();
+    startMainTimer();
+  }
+
+  const mainTimerEl = document.getElementById('mainTimer');
+  const statusBadgeEl = document.getElementById('statusBadge');
+  const middleBtn = document.getElementById('middleBtn');
+  const repsLabel = document.getElementById('repsLabel');
+  const repsDisplay = document.getElementById('repsDisplay');
+  const subtextDisplay = document.getElementById('subtextDisplay');
+  const pauseBtn = document.getElementById('pauseBtn');
+
+  function updateUI() {
+    if (isStartedWaiting) return;
+    
+    mainTimerEl.textContent = formatTime(timeLeft);
+    const ex = selectedExercises[currentExerciseIndex];
+    document.getElementById('workoutTitleLabel').textContent = `Ej. ${currentExerciseIndex + 1}/4: ${ex.name}`;
+
+    if (isRestingBetweenExercises) {
       middleBtn.className = 'middle-section rest';
-      repsLabel.textContent = 'Descansando';
+      repsLabel.textContent = 'Descanso entre bloques';
+      subtextDisplay.textContent = 'Siguiente ejercicio en camino...';
+    } else if (isRestingSet) {
+      middleBtn.className = 'middle-section rest';
+      repsLabel.textContent = 'Descansando serie';
       subtextDisplay.textContent = 'Recupera el aliento...';
     } else {
       middleBtn.className = 'middle-section work';
@@ -258,129 +776,224 @@
       subtextDisplay.textContent = 'Toca aquí al terminar la serie';
     }
 
-    if (isClimbing) {
-      statusBadgeEl.textContent = `Subiendo Pirámide ↑ (${currentReps} reps)`;
+    if (isPaused) {
+      statusBadgeEl.textContent = 'PAUSADO';
+    } else if (isRestingBetweenExercises) {
+      statusBadgeEl.textContent = 'Descanso 1 Min';
+    } else if (isClimbing) {
+      statusBadgeEl.textContent = `Subiendo ↑ (Cima: ${maxReachedReps})`;
     } else {
-      statusBadgeEl.textContent = `Bajando Pirámide ↓ (${currentReps} reps)`;
+      statusBadgeEl.textContent = `Bajando ↓ (${currentReps} reps)`;
     }
   }
 
-  // Iniciar / Pausar Temporizador Global
   function startMainTimer() {
-    if (!isRunning) {
-      isRunning = true;
-      startResetBtn.textContent = 'Reiniciar';
-      mainTimerInterval = setInterval(() => {
+    clearInterval(mainTimerInterval);
+    mainTimerInterval = setInterval(() => {
+      if (!isPaused && isRunning) {
         if (timeLeft > 0) {
           timeLeft--;
           mainTimerEl.textContent = formatTime(timeLeft);
-        } else {
-          finishWorkout();
+          
+          if (timeLeft <= 0) {
+            handleBlockTimeout();
+          }
         }
-      }, 1000);
+      }
+    }, 1000);
+  }
+
+  function handleBlockTimeout() {
+    clearInterval(mainTimerInterval);
+    clearInterval(restTimerInterval);
+    
+    // Guardar récord del ejercicio actual
+    exerciseMaxRecords.push({
+      name: selectedExercises[currentExerciseIndex].name,
+      maxReps: maxReachedReps
+    });
+
+    currentExerciseIndex++;
+
+    if (currentExerciseIndex < selectedExercises.length) {
+      // Iniciar 1 minuto de descanso entre ejercicios
+      startTransitionRest();
+    } else {
+      finishWorkout();
     }
   }
 
-  function finishWorkout() {
-    clearInterval(mainTimerInterval);
+  function startTransitionRest() {
+    isRestingBetweenExercises = true;
+    isRestingSet = false;
+    let transitionLeft = REST_TIME;
+    
+    repsDisplay.textContent = transitionLeft;
+    updateUI();
+
     clearInterval(restTimerInterval);
-    isRunning = false;
-    isResting = false;
-    alert('¡Tiempo terminado! Excelente entrenamiento de 7 minutos.');
-    resetApp();
+    restTimerInterval = setInterval(() => {
+      if (!isPaused) {
+        transitionLeft--;
+        if (transitionLeft > 0) {
+          repsDisplay.textContent = transitionLeft;
+        } else {
+          clearInterval(restTimerInterval);
+          playBeep();
+          
+          // Preparar siguiente ejercicio
+          isRestingBetweenExercises = false;
+          timeLeft = BLOCK_TIME;
+          currentReps = 1;
+          maxReachedReps = 1;
+          isClimbing = true;
+          
+          updateUI();
+          startMainTimer();
+        }
+      }
+    }, 1000);
   }
 
-  function resetApp() {
-    clearInterval(mainTimerInterval);
-    clearInterval(restTimerInterval);
-    timeLeft = TOTAL_TIME;
-    currentReps = 1;
-    isClimbing = true;
-    isResting = false;
-    isRunning = false;
-    startResetBtn.textContent = 'Iniciar';
-    statusBadgeEl.textContent = 'Listo para empezar';
+  function togglePause() {
+    if (isStartedWaiting) return;
+    isPaused = !isPaused;
+    pauseBtn.textContent = isPaused ? '▶️' : '⏸️';
     updateUI();
   }
 
-  // Lógica de descanso
-  function startRest(seconds) {
-    isResting = true;
+  function confirmExitWorkout() {
+    if (confirm('¿Seguro que quieres salir del workout actual? Se perderá el progreso.')) {
+      exitWorkoutToMenu();
+    }
+  }
+
+  function exitWorkoutToMenu() {
+    clearInterval(mainTimerInterval);
+    clearInterval(restTimerInterval);
+    isRunning = false;
+    isRestingSet = false;
+    isRestingBetweenExercises = false;
+    isPaused = false;
+    document.querySelector('.tab-bar').style.display = 'flex';
+    document.getElementById('workoutView').classList.remove('active');
+    document.getElementById('setupView').classList.add('active');
+  }
+
+  function finishWorkout() {
+    isRunning = false;
+    document.querySelector('.tab-bar').style.display = 'flex';
+
+    // Guardar en histórico
+    saveToHistory({
+      name: activeWorkoutTitle,
+      date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      records: exerciseMaxRecords
+    });
+
+    alert('¡Entrenamiento de los 4 ejercicios completado con éxito!');
+    document.getElementById('workoutView').classList.remove('active');
+    document.getElementById('setupView').classList.add('active');
+  }
+
+  // Descanso de repeticiones individual
+  function startRestSet(seconds) {
+    isRestingSet = true;
     let restRemaining = seconds;
     repsDisplay.textContent = restRemaining;
     updateUI();
 
     clearInterval(restTimerInterval);
     restTimerInterval = setInterval(() => {
-      restRemaining--;
-      if (restRemaining > 0) {
-        repsDisplay.textContent = restRemaining;
-      } else {
-        clearInterval(restTimerInterval);
-        playBeep();
-        isResting = false;
-        
-        // Calcular la siguiente serie de repeticiones
-        if (isClimbing) {
-          currentReps++;
+      if (!isPaused) {
+        restRemaining--;
+        if (restRemaining > 0) {
+          repsDisplay.textContent = restRemaining;
         } else {
-          currentReps--;
-          if (currentReps < 1) {
-            // Llegamos abajo del todo: volvemos a subir
-            currentReps = 1;
-            isClimbing = true;
+          clearInterval(restTimerInterval);
+          playBeep();
+          isRestingSet = false;
+          
+          if (isClimbing) {
+            currentReps++;
+            if (currentReps > maxReachedReps) {
+              maxReachedReps = currentReps;
+            }
+          } else {
+            currentReps--;
+            if (currentReps < 1) {
+              currentReps = 1;
+              isClimbing = true;
+            }
           }
+          updateUI();
         }
-        updateUI();
       }
     }, 1000);
   }
 
-  // EVENTOS DE BOTONES
+  // Acciones en la pantalla de pirámide
+  function handleMiddleClick() {
+    if (isRestingBetweenExercises || isPaused) return;
 
-  // 1. Pulsación en el botón verde (Terminé las repeticiones)
-  middleBtn.addEventListener('click', () => {
-    if (!isRunning) startMainTimer();
-    if (isResting) return; // Si está en descanso azul, ignorar clic
-
-    // El tiempo de descanso es igual al número de repeticiones que acaba de hacer
-    startRest(currentReps);
-  });
-
-  // 2. Pulsación en el botón rojo (Cima alcanzada / Revertir pirámide)
-  reverseBtn.addEventListener('click', () => {
-    if (!isRunning) startMainTimer();
-    if (isResting) return; // Si ya está descansando, ignorar
-
-    // Cambiar el sentido a bajada
-    isClimbing = false;
-    
-    // Iniciar descanso correspondiente a las reps donde falló/llegó a la cima
-    startRest(currentReps);
-  });
-
-  // 3. Botón de inicio/reset
-  startResetBtn.addEventListener('click', () => {
-    if (isRunning) {
-      if (confirm('¿Quieres reiniciar el entrenamiento?')) {
-        resetApp();
-      }
-    } else {
-      startMainTimer();
+    if (isStartedWaiting) {
+      startWorkoutBlock();
+      return;
     }
-  });
 
-  // Registrar el Service Worker para PWA
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then((reg) => console.log('Service Worker registrado con éxito', reg))
-        .catch((err) => console.error('Error al registrar el Service Worker', err));
-    });
+    if (isRestingSet) return;
+
+    if (isClimbing) {
+      maxReachedReps = currentReps;
+    }
+    startRestSet(currentReps);
   }
 
-  // Inicializar UI al cargar
-  updateUI();
+  function handleReverseClick() {
+    if (isStartedWaiting || isRestingBetweenExercises || isRestingSet || isPaused) return;
+    isClimbing = false;
+    maxReachedReps = currentReps;
+    startRestSet(currentReps);
+  }
+
+  // Histórico LocalStorage
+  function saveToHistory(record) {
+    let history = JSON.parse(localStorage.getItem('piramide_history_v2') || '[]');
+    history.unshift(record);
+    localStorage.setItem('piramide_history_v2', JSON.stringify(history));
+  }
+
+  function loadHistory() {
+    const historyListEl = document.getElementById('historyList');
+    let history = JSON.parse(localStorage.getItem('piramide_history_v2') || '[]');
+    
+    if (history.length === 0) {
+      historyListEl.innerHTML = '<div class="empty-history">No hay entrenamientos registrados todavía. ¡Empieza hoy!</div>';
+      return;
+    }
+
+    let html = '';
+    history.forEach(item => {
+      let recsHtml = '';
+      if (item.records) {
+        item.records.forEach(r => {
+          recsHtml += `<div style="font-size:0.8rem; color:#d4d4d8;">• ${r.name}: Cima ${r.maxReps} reps</div>`;
+        });
+      }
+      html += `
+        <div class="history-card">
+          <div class="history-card-header">
+            <span>${item.name}</span>
+            <span>📅 ${item.date}</span>
+          </div>
+          <div class="history-card-details" style="margin-top:6px;">
+            ${recsHtml}
+          </div>
+        </div>
+      `;
+    });
+    historyListEl.innerHTML = html;
+  }
 </script>
 </body>
 </html>

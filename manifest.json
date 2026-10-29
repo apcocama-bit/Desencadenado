@@ -1,7 +1,7 @@
 {
   "name": "Pirámide Desencadenado",
   "short_name": "Pirámide",
-  "description": "App de entrenamiento en pirámide según el programa Desencadenado",
+  "description": "App de entrenamiento en pirámide basada en el programa Desencadenado",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#121212",

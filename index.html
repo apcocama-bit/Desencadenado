@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Pirámide Desencadenado</title>
+  
+  <!-- Enlace al Manifest para PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e1e24">
+
+  <!-- Configuración para iOS / Safari -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Pirámide">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #121212;
+      color: #ffffff;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* 25% SUPERIOR: TEMPORIZADOR Y CONTROL */
+    .top-section {
+      height: 25%;
+      background-color: #1e1e24;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-bottom: 2px solid #333;
+      padding: 10px;
+      position: relative;
+    }
+
+    .timer-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #aaa;
+    }
+
+    .main-timer {
+      font-size: 2.8rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: #ffffff;
+    }
+
+    .status-badge {
+      margin-top: 4px;
+      font-size: 0.8rem;
+      padding: 3px 10px;
+      border-radius: 12px;
+      background: #333;
+      color: #ddd;
+    }
+
+    /* 50% CENTRAL: BOTÓN PRINCIPAL / ESTADO (VERDE O AZUL) */
+    .middle-section {
+      height: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.25s ease;
+      text-align: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    /* Estado Trabajo: Verde */
+    .middle-section.work {
+      background-color: #2e7d32;
+      color: #ffffff;
+    }
+    .middle-section.work:active {
+      background-color: #1b5e20;
+    }
+
+    /* Estado Descanso: Azul */
+    .middle-section.rest {
+      background-color: #1565c0;
+      color: #ffffff;
+    }
+
+    .reps-title {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
+    .reps-count {
+      font-size: 5rem;
+      font-weight: 900;
+      line-height: 1;
+      margin: 10px 0;
+    }
+
+    .action-subtext {
+      font-size: 0.95rem;
+      opacity: 0.85;
+      max-width: 80%;
+    }
+
+    /* 25% INFERIOR: BOTÓN ROJO DE REVERSIÓN */
+    .bottom-section {
+      height: 25%;
+      background-color: #c62828;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border-top: 2px solid #333;
+      transition: background-color 0.2s;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .bottom-section:active {
+      background-color: #b71c1c;
+    }
+
+    .bottom-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .bottom-subtitle {
+      font-size: 0.85rem;
+      margin-top: 4px;
+      opacity: 0.9;
+    }
+
+    /* Botón flotante para iniciar/resetear */
+    .control-btn {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      background: #444;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- 25% SUPERIOR -->
+  <div class="top-section">
+    <button id="startResetBtn" class="control-btn">Iniciar</button>
+    <div class="timer-label">Tiempo Restante (7 Min)</div>
+    <div id="mainTimer" class="main-timer">07:00</div>
+    <div id="statusBadge" class="status-badge">Listo para empezar</div>
+  </div>
+
+  <!-- 50% CENTRAL -->
+  <div id="middleBtn" class="middle-section work">
+    <div id="repsLabel" class="reps-title">Haz este nº de repeticiones</div>
+    <div id="repsDisplay" class="reps-count">1</div>
+    <div id="subtextDisplay" class="action-subtext">Toca aquí cuando completes la serie</div>
+  </div>
+
+  <!-- 25% INFERIOR -->
+  <div id="reverseBtn" class="bottom-section">
+    <div class="bottom-title">▲ LLEGUE A LA CIMA ▼</div>
+    <div class="bottom-subtitle">Toca aquí si no completaste la serie y quieres bajar</div>
+  </div>
+</div>
+
+<script>
+  // Variables del Estado
+  const TOTAL_TIME = 7 * 60; // 7 minutos en segundos
+  let timeLeft = TOTAL_TIME;
+  let mainTimerInterval = null;
+  let restTimerInterval = null;
+  
+  let currentReps = 1;
+  let isClimbing = true; // true = subiendo, false = bajando
+  let isResting = false;
+  let isRunning = false;
+
+  // Elementos del DOM
+  const mainTimerEl = document.getElementById('mainTimer');
+  const statusBadgeEl = document.getElementById('statusBadge');
+  const middleBtn = document.getElementById('middleBtn');
+  const repsLabel = document.getElementById('repsLabel');
+  const repsDisplay = document.getElementById('repsDisplay');
+  const subtextDisplay = document.getElementById('subtextDisplay');
+  const reverseBtn = document.getElementById('reverseBtn');
+  const startResetBtn = document.getElementById('startResetBtn');
+
+  // Formatear Segundos a MM:SS
+  function formatTime(sec) {
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = (sec % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  // Reproducir pitido simple al acabar descanso
+  function playBeep() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = 880; // Nota A5
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.3);
+    } catch(e) {
+      console.log('AudioContext no soportado/bloqueado');
+    }
+  }
+
+  // Actualizar la interfaz central
+  function updateUI() {
+    mainTimerEl.textContent = formatTime(timeLeft);
+    
+    if (isResting) {
+      middleBtn.className = 'middle-section rest';
+      repsLabel.textContent = 'Descansando';
+      subtextDisplay.textContent = 'Recupera el aliento...';
+    } else {
+      middleBtn.className = 'middle-section work';
+      repsLabel.textContent = 'Haz este nº de repeticiones';
+      repsDisplay.textContent = currentReps;
+      subtextDisplay.textContent = 'Toca aquí al terminar la serie';
+    }
+
+    if (isClimbing) {
+      statusBadgeEl.textContent = `Subiendo Pirámide ↑ (${currentReps} reps)`;
+    } else {
+      statusBadgeEl.textContent = `Bajando Pirámide ↓ (${currentReps} reps)`;
+    }
+  }
+
+  // Iniciar / Pausar Temporizador Global
+  function startMainTimer() {
+    if (!isRunning) {
+      isRunning = true;
+      startResetBtn.textContent = 'Reiniciar';
+      mainTimerInterval = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+          mainTimerEl.textContent = formatTime(timeLeft);
+        } else {
+          finishWorkout();
+        }
+      }, 1000);
+    }
+  }
+
+  function finishWorkout() {
+    clearInterval(mainTimerInterval);
+    clearInterval(restTimerInterval);
+    isRunning = false;
+    isResting = false;
+    alert('¡Tiempo terminado! Excelente entrenamiento de 7 minutos.');
+    resetApp();
+  }
+
+  function resetApp() {
+    clearInterval(mainTimerInterval);
+    clearInterval(restTimerInterval);
+    timeLeft = TOTAL_TIME;
+    currentReps = 1;
+    isClimbing = true;
+    isResting = false;
+    isRunning = false;
+    startResetBtn.textContent = 'Iniciar';
+    statusBadgeEl.textContent = 'Listo para empezar';
+    updateUI();
+  }
+
+  // Lógica de descanso
+  function startRest(seconds) {
+    isResting = true;
+    let restRemaining = seconds;
+    repsDisplay.textContent = restRemaining;
+    updateUI();
+
+    clearInterval(restTimerInterval);
+    restTimerInterval = setInterval(() => {
+      restRemaining--;
+      if (restRemaining > 0) {
+        repsDisplay.textContent = restRemaining;
+      } else {
+        clearInterval(restTimerInterval);
+        playBeep();
+        isResting = false;
+        
+        // Calcular la siguiente serie de repeticiones
+        if (isClimbing) {
+          currentReps++;
+        } else {
+          currentReps--;
+          if (currentReps < 1) {
+            // Llegamos abajo del todo: volvemos a subir
+            currentReps = 1;
+            isClimbing = true;
+          }
+        }
+        updateUI();
+      }
+    }, 1000);
+  }
+
+  // EVENTOS DE BOTONES
+
+  // 1. Pulsación en el botón verde (Terminé las repeticiones)
+  middleBtn.addEventListener('click', () => {
+    if (!isRunning) startMainTimer();
+    if (isResting) return; // Si está en descanso azul, ignorar clic
+
+    // El tiempo de descanso es igual al número de repeticiones que acaba de hacer
+    startRest(currentReps);
+  });
+
+  // 2. Pulsación en el botón rojo (Cima alcanzada / Revertir pirámide)
+  reverseBtn.addEventListener('click', () => {
+    if (!isRunning) startMainTimer();
+    if (isResting) return; // Si ya está descansando, ignorar
+
+    // Cambiar el sentido a bajada
+    isClimbing = false;
+    
+    // Iniciar descanso correspondiente a las reps donde falló/llegó a la cima
+    startRest(currentReps);
+  });
+
+  // 3. Botón de inicio/reset
+  startResetBtn.addEventListener('click', () => {
+    if (isRunning) {
+      if (confirm('¿Quieres reiniciar el entrenamiento?')) {
+        resetApp();
+      }
+    } else {
+      startMainTimer();
+    }
+  });
+
+  // Registrar el Service Worker para PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then((reg) => console.log('Service Worker registrado con éxito', reg))
+        .catch((err) => console.error('Error al registrar el Service Worker', err));
+    });
+  }
+
+  // Inicializar UI al cargar
+  updateUI();
+</script>
+</body>
+</html>
